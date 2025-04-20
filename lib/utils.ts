@@ -45,3 +45,24 @@ export const getRandomInterviewCover = () => {
   const randomIndex = Math.floor(Math.random() * interviewCovers.length);
   return `/covers${interviewCovers[randomIndex]}`;
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const handleFirebaseError = (error: any) => {
+  const errorCode = error?.code;
+  console.log("ERROR ",error?.code)
+
+  const messages: Record<string, string> = {
+    "auth/invalid-email": "Please enter a valid email address.",
+    "auth/user-disabled": "This account has been disabled. Please contact support.",
+    "auth/user-not-found": "No account found with this email.",
+    "auth/wrong-password": "Incorrect password. Please try again.",
+    "auth/email-already-in-use": "This email is already registered. Try signing in instead.",
+    "auth/weak-password": "Password is too weak. Please choose a stronger one.",
+    "auth/too-many-requests": "Too many attempts. Please wait a while before trying again.",
+    "auth/network-request-failed": "Network error. Please check your connection.",
+    "auth/missing-password": "Password is required.",
+    "auth/invalid-credential":"Please enter valid credentials"
+  };
+
+  return messages[errorCode] || "Something went wrong. Please try again.";
+};

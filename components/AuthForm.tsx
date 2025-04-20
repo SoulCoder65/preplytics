@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 // import { signIn, signUp } from "@/lib/actions/auth.action";
 import FormField from "./FormField";
 import { signIn, signUp } from "@/lib/actions/auth.action";
+import { handleFirebaseError } from "@/lib/utils";
 
 const authFormSchema = (type: FormType) => {
   return z.object({
@@ -42,57 +43,56 @@ const AuthForm = ({ type }: { type: FormType }) => {
     },
   });
 
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       if (type === "sign-up") {
         const { name, email, password } = data;
-
+  
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           email,
           password
         );
-
+  
         const result = await signUp({
           uid: userCredential.user.uid,
           name: name!,
           email,
           password,
         });
-
+  
         if (!result.success) {
-          toast.error(result.message);
+          toast.error(result.message || "Signup failed. Please try again.");
           return;
         }
-
+  
         toast.success("Account created successfully. Please sign in.");
         router.push("/sign-in");
       } else {
         const { email, password } = data;
-
+  
         const userCredential = await signInWithEmailAndPassword(
           auth,
           email,
           password
         );
-
+  
         const idToken = await userCredential.user.getIdToken();
         if (!idToken) {
-          toast.error("Sign in Failed. Please try again.");
+          toast.error("Sign in failed. Please try again.");
           return;
         }
-
-        await signIn({
-          email,
-          idToken,
-        });
-
+  
+        await signIn({ email, idToken });
+  
         toast.success("Signed in successfully.");
         router.push("/");
       }
-    } catch (error) {
-      console.log(error);
-      toast.error(`There was an error: ${error}`);
+    } catch (error: any) {
+      console.error("Auth Error:", error);
+      const friendlyMessage = handleFirebaseError(error);
+      toast.error(friendlyMessage);
     }
   };
 
