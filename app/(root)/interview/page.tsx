@@ -1,9 +1,22 @@
-import React from 'react'
+/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
+import Agent from "@/components/Agent";
+import { getCurrentUser } from "@/lib/actions/auth.action";
 
-const page = () => {
+const Page = async () => {
+  const user = await getCurrentUser();
+
   return (
-    <div>page</div>
-  )
-}
+    <>
+      <h3>Interview generation</h3>
 
-export default page
+      <Agent
+        userName={user?.name!}
+        userId={user?.id}
+        // profileImage={user?.profileURL}
+        type="generate"
+      />
+    </>
+  );
+};
+
+export default Page;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import dayjs from "dayjs";
 import Link from "next/link";
 import Image from "next/image";
